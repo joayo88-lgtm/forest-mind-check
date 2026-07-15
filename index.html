@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="theme-color" content="#5d8f68" />
+  <title>세계자연치유협회 숲마음 체크</title>
+  <style>
+:root {
+  --green:#5d8f68;
+  --green-dark:#376344;
+  --green-soft:#eaf4ec;
+  --blue-soft:#eaf6fb;
+  --text:#223127;
+  --muted:#65736a;
+  --line:#d6dfd8;
+  --danger:#b42318;
+  --danger-bg:#fff1f0;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif;background:#f5f8f5;color:var(--text);font-size:18px;line-height:1.55}
+.app-header{background:linear-gradient(135deg,var(--green),#82ad89);color:white;text-align:center;padding:28px 18px 24px}
+.app-header .brand{font-size:15px;opacity:.95;letter-spacing:.05em}
+.app-header h1{margin:6px 0 0;font-size:32px}
+.app-header p{margin:2px 0 0;font-size:17px}
+.container{max-width:720px;margin:0 auto;padding:20px 16px 36px;min-height:62vh}
+.card{background:white;border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 4px 16px rgba(31,63,41,.06)}
+h2{font-size:25px;margin:0 0 14px} h3{font-size:21px;margin:18px 0 10px}
+p{margin:8px 0}.small{font-size:14px;color:var(--muted)}
+.notice{background:var(--green-soft);border-left:5px solid var(--green);padding:14px;border-radius:10px;margin:14px 0}
+.danger{background:var(--danger-bg);border:2px solid #f3b7b2;color:#641d18;padding:18px;border-radius:14px}
+label{display:block;font-weight:700;margin:16px 0 7px}
+input,select{width:100%;font:inherit;padding:14px;border:1.5px solid #9eaaa1;border-radius:12px;background:white}
+.checkbox-row{display:flex;gap:10px;align-items:flex-start;margin:14px 0}.checkbox-row input{width:24px;height:24px;margin-top:2px;flex:none}
+button{width:100%;border:0;border-radius:14px;padding:16px;font-size:19px;font-weight:800;cursor:pointer;margin-top:12px}
+.primary{background:var(--green-dark);color:white}.secondary{background:#edf1ee;color:var(--text)}.outline{background:white;border:2px solid var(--green-dark);color:var(--green-dark)}
+.progress-wrap{margin:4px 0 18px}.progress-text{font-size:15px;color:var(--muted);display:flex;justify-content:space-between}.progress{height:10px;background:#e8ede9;border-radius:10px;overflow:hidden}.progress>div{height:100%;background:var(--green);transition:width .2s}
+.question{font-size:23px;font-weight:800;margin:14px 0 18px}
+.options{display:grid;gap:11px}.option{display:flex;align-items:center;gap:12px;background:var(--blue-soft);border:2px solid transparent;border-radius:14px;padding:14px;cursor:pointer}.option:hover,.option:focus-within{border-color:#5796b3}.option input{width:24px;height:24px;flex:none}
+.score{font-size:44px;font-weight:900;color:var(--green-dark);text-align:center;margin:10px 0}.result-box{border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0;background:#fbfdfb}.result-title{font-weight:900;font-size:20px}.pill{display:inline-block;background:var(--green-soft);padding:4px 10px;border-radius:999px;font-size:14px;font-weight:800}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none!important}
+hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+footer{text-align:center;color:#67736b;font-size:13px;padding:20px 14px 30px}
+@media(max-width:480px){body{font-size:17px}.app-header h1{font-size:29px}.card{padding:18px}.question{font-size:21px}.grid2{grid-template-columns:1fr}}
+@media print{.app-header,footer,button{display:none}.container{max-width:none}.card{box-shadow:none}}
+
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">세계자연치유협회</div>
+    <h1>숲마음 체크</h1>
+    <p>우울·불안·삶의 질 간편검사</p>
+  </header>
+
+  <main id="app" class="container" aria-live="polite"></main>
+
+  <footer>
+    <p>본 검사는 의료적 진단을 대신하지 않습니다.</p>
+    <p>긴급한 위험이 있으면 112 또는 119, 자살예방 상담전화 109에 연락하세요.</p>
+  </footer>
+
+  <script>
+window.APP_CONFIG = {
+  organization: "세계자연치유협회",
+  appName: "숲마음 체크",
+  // Google Apps Script 웹앱 URL을 입력하면 응답이 자동 전송됩니다.
+  // 예: "https://script.google.com/macros/s/XXXX/exec"
+  submitUrl: "",
+  privacyRetention: "사업 종료 후 1년",
+  adminPin: "2026"
+};
+
+</script>
+  <script>
+const CONFIG = window.APP_CONFIG || {};
+const app = document.getElementById('app');
+
+const PHQ9 = [
+  '기분이 가라앉거나, 우울하거나, 희망이 없다고 느꼈다.',
+  '평소 하던 일에 대한 흥미가 없어지거나 즐거움을 느끼지 못했다.',
+  '잠들기가 어렵거나 자주 깼다. 또는 너무 많이 잤다.',
+  '평소보다 식욕이 줄었다. 또는 평소보다 많이 먹었다.',
+  '다른 사람들이 눈치챌 정도로 평소보다 말과 행동이 느려졌다. 또는 너무 안절부절못해서 가만히 앉아 있을 수 없었다.',
+  '피곤하고 기운이 없었다.',
+  '내가 잘못했거나 실패했다는 생각이 들었다. 또는 자신과 가족을 실망시켰다고 생각했다.',
+  '신문을 읽거나 TV를 보는 것과 같은 일상적인 일에도 집중할 수가 없었다.',
+  '차라리 죽는 것이 더 낫겠다고 생각했다. 또는 자해할 생각을 했다.'
+];
+const PHQ_OPTS = ['없음', '2~6일', '7~12일', '거의 매일'];
+
+const GAD7 = [
+  '초조하거나 불안하거나 조마조마하게 느낀다.',
+  '걱정하는 것을 멈추거나 조절할 수가 없다.',
+  '여러 가지 것들에 대해 걱정을 너무 많이 한다.',
+  '편안하게 있기가 어렵다.',
+  '너무 안절부절못해서 가만히 있기가 힘들다.',
+  '쉽게 짜증이 나거나 쉽게 성을 내게 된다.',
+  '마치 끔찍한 일이 생길 것처럼 두렵게 느껴진다.'
+];
+const GAD_OPTS = ['전혀 방해받지 않았다', '며칠 동안 방해받았다', '2주 중 절반 이상 방해받았다', '거의 매일 방해받았다'];
+
+// 첨부 자료의 권장 K-CASP-16: CASP-19 중 3, 6, 16번 제외
+const KCASP16 = [
+  {n:1, t:'나는 좋아하는 일이 있어도 나이가 많아서 하지 못한다.', reverse:true},
+  {n:2, t:'나는 나에게 일어난 일을 통제하기가 어렵다.', reverse:true},
+  {n:4, t:'나는 소외된 느낌이 든다.', reverse:true},
+  {n:5, t:'나는 하고 싶은 일을 할 수 있다.', reverse:false},
+  {n:7, t:'나는 내가 할 수 있는 일을 즐기면서 할 수 있다.', reverse:false},
+  {n:8, t:'내가 하고 싶은 것이 있어도 나의 건강상태 때문에 하지 못한다.', reverse:true},
+  {n:9, t:'내가 하고 싶은 것이 있어도 금전적인 문제 때문에 하지 못한다.', reverse:true},
+  {n:10,t:'나는 매일매일이 기대된다.', reverse:false},
+  {n:11,t:'나의 인생이 의미 있다고 생각한다.', reverse:false},
+  {n:12,t:'나는 내가 하는 일을 즐긴다.', reverse:false},
+  {n:13,t:'나는 다른 사람들과 함께 있는 것을 좋아한다.', reverse:false},
+  {n:14,t:'내 인생을 되돌아보면 대체적으로 행복하다고 생각한다.', reverse:false},
+  {n:15,t:'나는 요즘 활력이 넘친다.', reverse:false},
+  {n:17,t:'나는 지금까지 살아온 인생에 대해서 만족한다.', reverse:false},
+  {n:18,t:'나는 인생이 기회로 가득 차 있다고 생각한다.', reverse:false},
+  {n:19,t:'나의 미래가 좋을 것이라고 생각한다.', reverse:false}
+];
+const CASP_OPTS = ['전혀 그렇지 않다', '가끔 그렇다', '종종 그렇다', '매우 그렇다'];
+
+let state = {
+  meta: {},
+  tests: ['phq9','gad7','casp16'],
+  currentTestIndex: 0,
+  currentQuestion: 0,
+  answers: {phq9:[], gad7:[], casp16:[]},
+  startedAt: null
+};
+
+function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function render(html){app.innerHTML=html;window.scrollTo({top:0,behavior:'smooth'});}
+
+function startScreen(){
+ render(`<section class="card">
+  <h2>숲체험 전후 마음상태를 확인합니다</h2>
+  <div class="notice">약 6~8분이 걸립니다. 정답은 없으며, 최근 2주간의 상태와 평소 삶에 가장 가까운 답을 선택해 주세요.</div>
+  <p><strong>검사 항목</strong>: PHQ-9 우울, GAD-7 불안, K-CASP-16 삶의 질</p>
+  <p class="small">본 검사는 프로그램 효과 확인을 위한 선별검사이며 의료적 진단을 대신하지 않습니다.</p>
+  <button class="primary" id="begin">검사 시작</button>
+  <button class="outline" id="admin">관리자 자료 보기</button>
+ </section>`);
+ document.getElementById('begin').onclick=consentScreen;
+ document.getElementById('admin').onclick=adminLogin;
+}
+
+function consentScreen(){
+ render(`<section class="card"><h2>참여자 정보와 동의</h2>
+  <label for="pid">참여자 번호</label><input id="pid" placeholder="예: EP-001" autocomplete="off">
+  <label for="agency">참여기관</label><input id="agency" placeholder="예: ○○노인복지관">
+  <div class="grid2"><div><label for="age">연령대</label><select id="age"><option value="">선택</option><option>50대</option><option>60대</option><option>70대</option><option>80대 이상</option></select></div>
+  <div><label for="gender">성별</label><select id="gender"><option value="응답하지 않음">응답하지 않음</option><option>남</option><option>여</option><option>기타</option></select></div></div>
+  <label for="phase">검사 구분</label><select id="phase"><option value="사전">사전검사</option><option value="중간">중간검사</option><option value="사후">사후검사</option></select>
+  <div class="notice"><strong>수집 목적</strong>: 숲체험 프로그램 운영 및 효과 분석<br><strong>수집 항목</strong>: 참여자 번호, 연령대, 성별, 기관, 검사 응답 및 점수<br><strong>보유기간</strong>: ${esc(CONFIG.privacyRetention || '사업 종료 후 1년')}<br><span class="small">이름과 연락처는 수집하지 않는 것을 권장합니다.</span></div>
+  <label class="checkbox-row"><input type="checkbox" id="agree"><span>검사 목적과 개인정보 처리 내용을 확인했으며 자발적으로 참여합니다.</span></label>
+  <button class="primary" id="next">동의하고 계속</button><button class="secondary" id="back">처음으로</button></section>`);
+ document.getElementById('back').onclick=startScreen;
+ document.getElementById('next').onclick=()=>{
+   const pid=document.getElementById('pid').value.trim();
+   if(!pid){alert('참여자 번호를 입력해 주세요.');return;}
+   if(!document.getElementById('agree').checked){alert('참여 동의에 체크해 주세요.');return;}
+   state.meta={participantId:pid,agency:document.getElementById('agency').value.trim(),ageGroup:document.getElementById('age').value,gender:document.getElementById('gender').value,phase:document.getElementById('phase').value};
+   state.startedAt=new Date().toISOString();
+   testIntro();
+ };
+}
+
+function testInfo(key){
+ if(key==='phq9') return {title:'우울 건강 설문 PHQ-9',desc:'지난 2주간 얼마나 자주 다음 문제로 어려움을 겪었습니까?',items:PHQ9,opts:PHQ_OPTS};
+ if(key==='gad7') return {title:'일반화된 불안장애 척도 GAD-7',desc:'지난 2주간 다음 문제들로 인해 얼마나 자주 방해를 받았습니까?',items:GAD7,opts:GAD_OPTS};
+ return {title:'노인 삶의 질 척도 K-CASP-16',desc:'평소 자신의 삶을 가장 잘 나타내는 답을 선택해 주세요.',items:KCASP16.map(x=>x.t),opts:CASP_OPTS};
+}
+function testIntro(){
+ const key=state.tests[state.currentTestIndex], info=testInfo(key);
+ render(`<section class="card"><span class="pill">${state.currentTestIndex+1} / ${state.tests.length}</span><h2>${info.title}</h2><p>${info.desc}</p><button class="primary" id="go">시작하기</button></section>`);
+ document.getElementById('go').onclick=()=>{state.currentQuestion=0;questionScreen();};
+}
+function questionScreen(){
+ const key=state.tests[state.currentTestIndex], info=testInfo(key), i=state.currentQuestion, total=info.items.length;
+ const selected=state.answers[key][i];
+ render(`<section class="card">
+  <div class="progress-wrap"><div class="progress-text"><span>${info.title}</span><span>${i+1}/${total}</span></div><div class="progress"><div style="width:${((i+1)/total)*100}%"></div></div></div>
+  <div class="question">${i+1}. ${esc(info.items[i])}</div>
+  <div class="options">${info.opts.map((o,v)=>`<label class="option"><input type="radio" name="ans" value="${v}" ${selected===v?'checked':''}><span>${esc(o)}</span></label>`).join('')}</div>
+  <button class="primary" id="qnext">${i===total-1?'검사 완료':'다음 문항'}</button>
+  ${i>0?'<button class="secondary" id="qback">이전 문항</button>':''}
+ </section>`);
+ document.getElementById('qnext').onclick=()=>{
+   const chosen=document.querySelector('input[name="ans"]:checked');
+   if(!chosen){alert('답변을 선택해 주세요.');return;}
+   state.answers[key][i]=Number(chosen.value);
+   if(key==='phq9' && i===8 && Number(chosen.value)>0){crisisConfirm(()=>advance(total));} else advance(total);
+ };
+ if(i>0) document.getElementById('qback').onclick=()=>{state.currentQuestion--;questionScreen();};
+}
+function advance(total){
+ if(state.currentQuestion<total-1){state.currentQuestion++;questionScreen();return;}
+ if(state.currentTestIndex<state.tests.length-1){state.currentTestIndex++;testIntro();return;}
+ finish();
+}
+function crisisConfirm(done){
+ render(`<section class="card danger"><h2>지금 바로 도움을 받아도 괜찮습니다</h2>
+ <p>최근 죽고 싶거나 자신을 해칠 생각이 있었다고 응답하셨습니다. 혼자 견디지 말고 <strong>현장 진행자에게 지금 말씀해 주세요.</strong></p>
+ <p>급박한 위험이 있으면 <strong>112 또는 119</strong>, 자살예방 상담전화 <strong>109</strong>에 연락하세요.</p>
+ <label class="checkbox-row"><input type="checkbox" id="staff"><span>현장 진행자에게 이 화면을 보여주었거나 도움을 요청했습니다.</span></label>
+ <button class="primary" id="continue">확인 후 검사 계속</button></section>`);
+ document.getElementById('continue').onclick=()=>{
+   state.meta.crisisAcknowledged=document.getElementById('staff').checked;
+   done();
+ };
+}
+function phqLevel(s){return s<5?'매우 낮음':s<10?'가벼움':s<15?'중간':s<20?'높음':'매우 높음';}
+function gadLevel(s){return s<5?'매우 낮음':s<10?'가벼움':s<15?'중간':'높음';}
+function calc(){
+ const phq=state.answers.phq9.reduce((a,b)=>a+b,0);
+ const gad=state.answers.gad7.reduce((a,b)=>a+b,0);
+ const casp=state.answers.casp16.reduce((sum,v,i)=>sum+(KCASP16[i].reverse?(4-v):(v+1)),0);
+ return {phq9:phq,gad7:gad,casp16:casp,phq9Level:phqLevel(phq),gad7Level:gadLevel(gad),riskItem9:state.answers.phq9[8]||0};
+}
+async function finish(){
+ const scores=calc();
+ const record={...state.meta,...scores,answers:state.answers,startedAt:state.startedAt,completedAt:new Date().toISOString(),userAgent:navigator.userAgent};
+ saveLocal(record);
+ let sent=false;
+ if(CONFIG.submitUrl){try{await fetch(CONFIG.submitUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(record)});sent=true;}catch(e){console.warn(e);}}
+ resultScreen(scores,sent);
+}
+function saveLocal(r){const rows=JSON.parse(localStorage.getItem('forestMindRecords')||'[]');rows.push(r);localStorage.setItem('forestMindRecords',JSON.stringify(rows));}
+function resultScreen(s,sent){
+ const risk=s.riskItem9>0;
+ render(`<section class="card"><h2>검사가 완료되었습니다</h2><p class="small">참여자 번호: ${esc(state.meta.participantId)} · ${esc(state.meta.phase)}</p>
+ <div class="result-box"><div class="result-title">우울 건강 PHQ-9</div><div class="score">${s.phq9}<small>/27</small></div><p>현재 응답 수준: <strong>${s.phq9Level}</strong></p></div>
+ <div class="result-box"><div class="result-title">불안 건강 GAD-7</div><div class="score">${s.gad7}<small>/21</small></div><p>현재 응답 수준: <strong>${s.gad7Level}</strong></p></div>
+ <div class="result-box"><div class="result-title">삶의 질 K-CASP-16</div><div class="score">${s.casp16}<small>/64</small></div><p>점수가 높을수록 삶의 질을 긍정적으로 평가한 것입니다. 단독 정상·비정상 판정에는 사용하지 않습니다.</p></div>
+ ${risk?'<div class="danger"><strong>현장 진행자 확인 필요</strong><p>PHQ-9의 자해·죽음 관련 문항에 응답이 있었습니다. 총점과 관계없이 진행자가 즉시 대면 확인해 주세요.</p></div>':''}
+ <div class="notice">이 결과는 의료적 진단이 아닙니다. 어려움이 지속되거나 일상생활에 영향을 주면 정신건강 전문가와 상담해 주세요.</div>
+ <p class="small">${sent?'응답이 관리자 자료로 전송되었습니다.':'이 기기에 임시 저장되었습니다. 중앙 수집 주소가 설정되면 자동 전송됩니다.'}</p>
+ <button class="primary" id="new">새 참여자 검사</button><button class="outline" id="print">결과 인쇄</button></section>`);
+ document.getElementById('new').onclick=()=>{state={meta:{},tests:['phq9','gad7','casp16'],currentTestIndex:0,currentQuestion:0,answers:{phq9:[],gad7:[],casp16:[]},startedAt:null};startScreen();};
+ document.getElementById('print').onclick=()=>window.print();
+}
+function adminLogin(){
+ const pin=prompt('관리자 PIN을 입력하세요.');
+ if(pin!==String(CONFIG.adminPin||'')){alert('PIN이 올바르지 않습니다.');return;}
+ adminScreen();
+}
+function adminScreen(){
+ const rows=JSON.parse(localStorage.getItem('forestMindRecords')||'[]');
+ render(`<section class="card"><h2>관리자 자료</h2><p>현재 기기에 저장된 응답: <strong>${rows.length}건</strong></p>
+ <button class="primary" id="csv" ${rows.length?'':'disabled'}>CSV 내려받기</button>
+ <button class="outline" id="json" ${rows.length?'':'disabled'}>JSON 백업</button>
+ <button class="secondary" id="clear" ${rows.length?'':'disabled'}>이 기기 자료 삭제</button>
+ <button class="secondary" id="home">처음으로</button>
+ <div class="notice small">정식 운영에서는 관리자 PIN을 변경하고, Google Sheets 또는 별도 보안 서버로 중앙 수집하도록 설정하세요. 브라우저 로컬 저장소만으로는 여러 스마트폰의 자료가 합쳐지지 않습니다.</div></section>`);
+ document.getElementById('home').onclick=startScreen;
+ if(rows.length){
+  document.getElementById('csv').onclick=()=>downloadCsv(rows);
+  document.getElementById('json').onclick=()=>downloadBlob(JSON.stringify(rows,null,2),'forest-mind-backup.json','application/json');
+  document.getElementById('clear').onclick=()=>{if(confirm('이 기기에 저장된 모든 응답을 삭제할까요?')){localStorage.removeItem('forestMindRecords');adminScreen();}};
+ }
+}
+function downloadCsv(rows){
+ const head=['participantId','agency','ageGroup','gender','phase','phq9','phq9Level','gad7','gad7Level','casp16','riskItem9','crisisAcknowledged','startedAt','completedAt'];
+ const csv=[head.join(',')].concat(rows.map(r=>head.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))).join('\ufeff\n');
+ downloadBlob('\ufeff'+csv,'forest-mind-records.csv','text/csv;charset=utf-8');
+}
+function downloadBlob(data,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href);}
+startScreen();
+
+</script>
+</body>
+</html>
